@@ -151,10 +151,13 @@ if st.button("Predict Calories Burnt"):
     st.write(f"### BMI Category: {bmi_category}")
     
     st.markdown(
-    f"<div style='font-size:30px; color: light_green;'>Estimated Calories Burnt: {result[0]:.2f} kcal</div>",
+    f"""
+    <div style='font-size:30px; font-family:Sans-serif; color:#2EAACE; font-weight:bold;'>
+        Estimated Calories Burnt: {result[0]:.2f} kcal
+    </div>
+    """,
     unsafe_allow_html=True
     )
-
 
     
     # BMR Calculation 
