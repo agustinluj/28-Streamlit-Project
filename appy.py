@@ -148,7 +148,7 @@ if st.button("Predict Calories Burnt"):
     # predicted result
     st.write(f"### Your BMI is: {bmi:.2f}")
     
-    st.write(f"### BMI Category: {bmi_category}
+    st.write(f"### BMI Category: {bmi_category}")
     
     st.success(f"Estimated Calories Burnt: {result[0]:.2f} kcal")
 
