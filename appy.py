@@ -4,6 +4,8 @@ import streamlit as st
 import matplotlib.pyplot as plt
 import plotly.graph_objects as go
 import numpy as np
+import seaborn as sns
+
 
 # loading the model
 with open(r'models\model.pkl', 'rb') as f:
@@ -40,9 +42,7 @@ if height > 0:
     st.write(f"### BMI Category: {bmi_category}")
 
 
-#-----------------------
 def plot_bmi_gauge(bmi_value):
-    # Create the gauge chart
     fig = go.Figure(
         go.Indicator(
             mode="gauge+number",
@@ -56,11 +56,11 @@ def plot_bmi_gauge(bmi_value):
                 'borderwidth': 2,
                 'bordercolor': "gray",
                 'steps': [
-                    {'range': [0, 18.5], 'color': '#00bfff'},  # Underweight
-                    {'range': [18.5, 25], 'color': '#00ff00'},  # Normal
-                    {'range': [25, 30], 'color': '#ffff00'},  # Overweight
-                    {'range': [30, 35], 'color': '#ffa500'},  # Obese
-                    {'range': [35, 50], 'color': '#ff0000'}   # Morbidly Obese
+                    {'range': [0, 18.5], 'color': '#00bfff'},  # underweight
+                    {'range': [18.5, 25], 'color': '#00ff00'},  # normal
+                    {'range': [25, 30], 'color': '#ffff00'},  # overweight
+                    {'range': [30, 35], 'color': '#ffa500'},  # obesity
+                    {'range': [35, 50], 'color': '#ff0000'}   # morbidly obesity
                 ],
                 'threshold': {
                     'line': {'color': "black", 'width': 4},
@@ -70,17 +70,65 @@ def plot_bmi_gauge(bmi_value):
             }
         )
     )
-
-    # Update layout for better appearance
     fig.update_layout(
         margin={'l': 20, 'r': 20, 't': 50, 'b': 20},
         height=400
     )
-
-    # Display the chart in Streamlit
     st.plotly_chart(fig)
 
-#---------------------------
+def plot_bmr_chart_with_gradients(height, weight, bmr):
+    # height-weight ranges
+    heights = np.linspace(140, 200, 17)  # 17 rows
+    weights = np.linspace(40, 140, 23)  # 23 columns
+
+    # BMR data with gradients
+    bmr_values = np.zeros((17, 23))
+    for i in range(17):
+        for j in range(23):
+            bmr_values[i, j] = 15 + (j / 22) * 20 + (16 - i) / 16 * 10  # adjust formula 
+
+    # color map 
+    colors = [
+        '#a2cffe',  # Light blue
+        '#86e4b4',  # Green
+        '#f2d06b',  # Yellow
+        '#fba74b',  # Orange
+        '#fb5f5f'   # Red
+    ]
+    cmap = sns.blend_palette(colors, as_cmap=True)
+
+    # user's position in the table
+    closest_height_idx = (np.abs(heights - height)).argmin()
+    closest_weight_idx = (np.abs(weights - weight)).argmin()
+
+    # heatmap
+    fig, ax = plt.subplots(figsize=(12, 8))
+    sns.heatmap(
+        bmr_values,
+        annot=True,
+        fmt=".0f",
+        cmap=cmap,
+        xticklabels=[f"{w:.0f} kg" for w in weights],
+        yticklabels=[f"{h:.0f} cm" for h in heights],
+        cbar_kws={'label': 'BMR (kcal)'},
+        ax=ax
+    )
+
+    # user's position
+    ax.scatter(
+        closest_weight_idx + 0.5, closest_height_idx + 0.5,
+        color="black", s=200, edgecolors="white", label="Your Position"
+    )
+
+    # labels and title
+    ax.set_title("BMR Chart with Highlighted User Position", fontsize=16)
+    ax.set_xlabel("Weight (kg)", fontsize=14)
+    ax.set_ylabel("Height (cm)", fontsize=14)
+    ax.legend(loc="upper left", bbox_to_anchor=(1.05, 1), fontsize=12)
+
+    st.pyplot(fig)
+
+
 
 # predict button 
 if st.button("Predict Calories Burnt"):
@@ -107,14 +155,7 @@ if st.button("Predict Calories Burnt"):
         bmr = 10 * weight + 6.25 * height - 5 * age - 161
     st.write(f"### Your Basal Metabolic Rate (BMR): {bmr:.2f} kcal/day")
 
-    # BMR vs Calories Burnt Bar Chart
-    fig, ax = plt.subplots(figsize=(6, 4))
-    activities = ['BMR', 'Calories Burnt']
-    values = [bmr, result[0]]
-    ax.bar(activities, values, color=['blue', 'orange'], alpha=0.7)
-    ax.set_title('BMR vs. Calories Burnt')
-    ax.set_ylabel('Calories (kcal)')
-    st.pyplot(fig)
-
     # BMI gauge
     plot_bmi_gauge(bmi)
+    # BMR chart
+    plot_bmr_chart_with_gradients(height, weight, bmr)
