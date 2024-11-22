@@ -150,7 +150,7 @@ if st.button("Predict Calories Burnt"):
     
     st.write(f"### BMI Category: {bmi_category}")
     
-    st.success(f"Estimated Calories Burnt: {result[0]:.2f} kcal")
+    st.write(st.success(f"Estimated Calories Burnt: {result[0]:.2f} kcal"))
 
     
     # BMR Calculation 
