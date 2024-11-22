@@ -8,7 +8,7 @@ import seaborn as sns
 
 
 # loading the model
-with open(r'models\model.pkl', 'rb') as f:
+with open(r'models/model.pkl', 'rb') as f:
     pipe = pickle.load(f)
 
 st.title("Calories Burning Prediction")
