@@ -28,7 +28,7 @@ body_temp = st.number_input("Body Temperature (°C)", min_value=36.0, max_value=
 # BMI calculation
 if height > 0:
     bmi = weight / ((height / 100) ** 2)
-    st.write(f"### Your BMI is: {bmi:.2f}")
+    #st.write(f"### Your BMI is: {bmi:.2f}")
 
     # BMI categorization
     if bmi < 18.5:
@@ -39,7 +39,7 @@ if height > 0:
         bmi_category = "Overweight"
     else:
         bmi_category = "Obesity"
-    st.write(f"### BMI Category: {bmi_category}")
+    #st.write(f"### BMI Category: {bmi_category}")
 
 
 def plot_bmi_gauge(bmi_value):
@@ -146,8 +146,13 @@ if st.button("Predict Calories Burnt"):
     result = pipe.predict(sample)
     
     # predicted result
+    st.write(f"### Your BMI is: {bmi:.2f}")
+    
+    st.write(f"### BMI Category: {bmi_category}
+    
     st.success(f"Estimated Calories Burnt: {result[0]:.2f} kcal")
 
+    
     # BMR Calculation 
     if gender == 'male':
         bmr = 10 * weight + 6.25 * height - 5 * age + 5
